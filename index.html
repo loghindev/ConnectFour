@@ -8,21 +8,75 @@
     <link rel="stylesheet" type="text/css" href="./style.css" />
   </head>
   <body>
-    <div id="menu">Menu</div>
+    <!-- Music - autoplay off -->
+    <audio src="./assets/effects/music.mp3" id="bgAudio" preload="auto" type="audio/mp3" loop></audio>
+    <!-- Menu -->
+    <div id="menu">START</div>
+
+    <!-- In-game -->
     <div id="game">
+      <div id="restart">
+        <img src="./assets/icons/SYMB_REPLAY.webp" class="" alt="restart_icon" />
+      </div>
       <div id="playersWrapper">
         <div id="player1">
-          <div class="winner-icon">Trophy</div>
-          <div class="name">Player 1</div>
+          <img src="./assets/icons/SYMB_AWARD.webp" class="winner-icon hidden" alt="award" />
+          <div class="header">
+            <div class="name">Player 1</div>
+            <img src="" class="piece" alt="player1_piece" />
+          </div>
         </div>
         <div id="versus-icon">Vs.</div>
         <div id="player2">
-          <div class="winner-icon">Trophy</div>
-          <div class="name">Player 2</div>
+          <img src="./assets/icons/SYMB_AWARD.webp" class="winner-icon hidden" alt="award" />
+          <div class="header">
+            <div class="name">Player 2</div>
+            <img src="" class="piece" alt="player2_piece" />
+          </div>
         </div>
       </div>
       <div id="gameboard"></div>
       <div id="scoreboard">0 : 0</div>
+    </div>
+
+    <!-- Aside settings -->
+    <div id="settings">
+      <img src="./assets/icons/SYMB_SETTINGS.webp" class="settings-icon" alt="settings_symbol" />
+      <div class="header">Settings</div>
+
+      <div class="content">
+        <div class="music">
+          <span>Music no</span>
+          <img src="./assets/icons/SYMB_VOLUME.webp" class="music-unmuted" alt="volume_up" />
+          <img src="./assets/icons/SYMB_MUTE.webp" class="music-muted hidden-setting" alt="volume_muted" />
+        </div>
+        <div class="effects">
+          <span>Effects:</span>
+          <img src="./assets/icons/BTN_CHECKBOX_OUT.webp" class="effects-muted hidden-setting" alt="check_out_button" />
+          <img src="./assets/icons/BTN_CHECKBOX_IN.webp" class="effects-unmuted" alt="check_in_button" />
+        </div>
+        <div class="player1-color">
+          <span>Player 1</span>
+          <div class="options">
+            <img src="./assets/icons/BTN_HORIZ_SINGLE_UP.webp" class="left-arr" alt="left_arrow" />
+            <div class="pieces-colors">
+              <img src="" class="color" alt="player_piece_color" />
+            </div>
+            <img src="./assets/icons/BTN_HORIZ_SINGLE_DOWN.webp" class="right-arr" alt="right_arrow" />
+          </div>
+        </div>
+        <div class="player2-color">
+          <span>Player 2</span>
+          <div class="options">
+            <img src="./assets/icons/BTN_HORIZ_SINGLE_UP.webp" class="left-arr" alt="left_arrow" />
+            <div class="pieces-colors">
+              <img src="" class="color" alt="player_piece_color" />
+            </div>
+            <img src="./assets/icons/BTN_HORIZ_SINGLE_DOWN.webp" class="right-arr" alt="right_arrow" />
+          </div>
+        </div>
+        <div class="change-settings-warning">Requires new round to take effect</div>
+      </div>
     </div>
   </body>
   <script src="./script.js"></script>

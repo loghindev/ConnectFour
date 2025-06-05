@@ -1,13 +1,38 @@
 const gameboard = document.getElementById("gameboard");
+const player1Name = document.querySelector("#game #player1 .name");
+const player1Trophy = document.querySelector("#game #player1 .winner-icon");
+const player1Piece = document.querySelector("#game #playersWrapper #player1 .piece");
+const player2Name = document.querySelector("#game #player2 .name");
+const player2Trophy = document.querySelector("#game #player2 .winner-icon");
+const player2Piece = document.querySelector("#game #playersWrapper #player2 .piece");
+const resetBtn = document.querySelector("#restart img");
+const settings = document.getElementById("settings");
+const player1SettingsColor = document.querySelector("#settings .content .player1-color .pieces-colors .color");
+const player2SettingsColor = document.querySelector("#settings .content .player2-color .pieces-colors .color");
+const musicUnmutedIcon = document.querySelector("#settings .music .music-unmuted");
+const musicMutedIcon = document.querySelector("#settings .music .music-muted");
+const effectsUnmutedIcon = document.querySelector("#settings .effects .effects-unmuted");
+const effectsMutedIcon = document.querySelector("#settings .effects .effects-muted");
+const musicVolume = 0.5;
+const effectsVolume = 0.8;
 const rows = 6;
 const cols = 7;
 const players = ["Red", "Yellow"];
+
 let currPlayer = players[Math.floor(Math.random() * players.length)];
+let player1ColorIndex =
+  localStorage.getItem("player1ColorIndex") !== null ? localStorage.getItem("player1ColorIndex") : 0;
+let player2ColorIndex =
+  localStorage.getItem("player2ColorIndex") !== null ? localStorage.getItem("player2ColorIndex") : 1;
 let matrix = [];
 let gameOver = false;
+// console.log(localStorage);
 
 document.addEventListener("DOMContentLoaded", () => {
   generateGameboard();
+  highlighCurrentPlayer();
+  loadPlayersPieces();
+  handlePiecesChanger();
 });
 
 function generateGameboard() {
@@ -26,30 +51,40 @@ function generateGameboard() {
 }
 
 function setCell(event) {
-  if (gameOver) return;
   let r = rows - 1;
   let c = event.target.id.split("-")[1];
+  if (gameOver || matrix[0][c] !== " ") return;
 
+  // search for available cell
   while (r >= 0) {
-    if (matrix[0][c] !== " ") break;
-
+    const cell = document.getElementById(`${r}-${c}`);
     if (matrix[r][c] === " " && currPlayer === "Red") {
-      const cell = document.getElementById(`${r}-${c}`);
       matrix[r][c] = players[0];
-      cell.style.backgroundColor = "red";
+      cell.classList.add("fade-in");
+      const path =
+        localStorage.getItem("player1Color") !== null
+          ? localStorage.getItem("player1Color")
+          : piecesColors[player1ColorIndex];
+      cell.style.backgroundImage = `url(${path.replace("IN", "OUT")})`;
       break;
     } else if (matrix[r][c] === " " && currPlayer === "Yellow") {
-      const cell = document.getElementById(`${r}-${c}`);
       matrix[r][c] = players[1];
-      cell.style.backgroundColor = "yellow";
+      cell.classList.add("fade-in");
+      const path =
+        localStorage.getItem("player2Color") !== null
+          ? localStorage.getItem("player2Color")
+          : piecesColors[player2ColorIndex];
+      cell.style.backgroundImage = `url(${path.replace("IN", "OUT")})`;
       break;
     }
     --r;
   }
-  // after each click, check winner then update current player
+  runClickEffect();
   checkWinner(currPlayer);
-  currPlayer = currPlayer === players[0] ? players[1] : players[0];
-  console.log(...matrix);
+  if (!gameOver) {
+    currPlayer = currPlayer === players[0] ? players[1] : players[0];
+    highlighCurrentPlayer();
+  }
 }
 
 function checkWinner(player) {
@@ -113,11 +148,159 @@ function checkWinner(player) {
       }
     }
   }
+  // tie
+  const filledCells = document.querySelectorAll("#gameboard .cell.fade-in");
+  if (filledCells.length === rows * cols && !gameOver) {
+    displayWinner("Tie");
+  }
 }
 
 function displayWinner(winner) {
   gameOver = true;
-  setTimeout(() => {
-    alert(`Winner is ${winner}`);
-  }, 100);
+  if (winner === "Red") {
+    runWinnerEffect();
+    player1Trophy.classList.remove("hidden"); // .replace - gsap
+  } else if (winner === "Yellow") {
+    runWinnerEffect();
+    player2Trophy.classList.remove("hidden"); // .replace - gsap
+  } else if (winner === "Tie") {
+    runTieEffect();
+    document.getElementById("versus-icon").textContent = "TIE";
+  }
+  highlighCurrentPlayer(); // gameOver is true
+  resetBtn.classList.remove("hidden"); // .replace - gsap
+  resetBtn.addEventListener("click", resetGame);
 }
+
+function highlighCurrentPlayer() {
+  player1Name.style.transition = "color 0.25s ease";
+  player2Name.style.transition = "color 0.25s ease";
+  if (gameOver) {
+    player1Name.style.color = "black";
+    player2Name.style.color = "black";
+    return;
+  }
+  if (currPlayer === players[0]) {
+    player1Name.style.color = "white";
+    player2Name.style.color = "black";
+  } else if (currPlayer === players[1]) {
+    player1Name.style.color = "black";
+    player2Name.style.color = "white";
+  }
+}
+
+function loadPlayersPieces() {
+  player1Piece.src = piecesColors[player1ColorIndex];
+  player2Piece.src = piecesColors[player2ColorIndex];
+  player1SettingsColor.src = piecesColors[player1ColorIndex];
+  player2SettingsColor.src = piecesColors[player2ColorIndex];
+}
+
+function resetGame() {
+  window.location.reload();
+}
+
+// ---------- Aside Settings ------------
+const musicText = document.querySelector("#settings .music span");
+const music = document.getElementById("bgAudio");
+music.volume = musicVolume;
+
+const clickEffect = new Audio("./assets/effects/click-effect.mp3");
+const winnerEffect = new Audio("./assets/effects/winner-effect.mp3");
+const tieEffect = new Audio("./assets/effects/tie-effect.mp3");
+winnerEffect.volume = 0.6;
+tieEffect.volume = 0.6;
+
+musicUnmutedIcon.addEventListener("click", () => {
+  musicUnmutedIcon.classList.add("hidden-setting");
+  musicMutedIcon.classList.remove("hidden-setting");
+  musicText.textContent = "Music no";
+  music.pause();
+});
+
+musicMutedIcon.addEventListener("click", () => {
+  musicMutedIcon.classList.add("hidden-setting");
+  musicUnmutedIcon.classList.remove("hidden-setting");
+  musicText.textContent = "Music on";
+  music.play();
+});
+
+effectsUnmutedIcon.addEventListener("click", () => {
+  effectsUnmutedIcon.classList.add("hidden-setting");
+  effectsMutedIcon.classList.remove("hidden-setting");
+  runClickEffect();
+});
+
+effectsMutedIcon.addEventListener("click", () => {
+  effectsMutedIcon.classList.add("hidden-setting");
+  effectsUnmutedIcon.classList.remove("hidden-setting");
+  runClickEffect();
+});
+
+function handlePiecesChanger() {
+  const player1ArrLeft = document.querySelector("#settings .player1-color .options .left-arr");
+  const player1ArrRight = document.querySelector("#settings .player1-color .options .right-arr");
+  const player2ArrLeft = document.querySelector("#settings .player2-color .options .left-arr");
+  const player2ArrRight = document.querySelector("#settings .player2-color .options .right-arr");
+  const colorsLength = piecesColors.length;
+
+  // handle actions
+  player1ArrLeft.addEventListener("click", () => {
+    player1ColorIndex > 0 ? --player1ColorIndex : (player1ColorIndex = colorsLength - 1);
+    updatePieceColor(player1ColorIndex, 1);
+    runClickEffect();
+  });
+  player1ArrRight.addEventListener("click", () => {
+    player1ColorIndex < colorsLength - 1 ? ++player1ColorIndex : (player1ColorIndex = 0);
+    updatePieceColor(player1ColorIndex, 1);
+    runClickEffect();
+  });
+
+  player2ArrLeft.addEventListener("click", () => {
+    player2ColorIndex > 0 ? --player2ColorIndex : (player2ColorIndex = colorsLength - 1);
+    updatePieceColor(player2ColorIndex, 2);
+    runClickEffect();
+  });
+
+  player2ArrRight.addEventListener("click", () => {
+    player2ColorIndex < colorsLength - 1 ? ++player2ColorIndex : (player2ColorIndex = 0);
+    updatePieceColor(player2ColorIndex, 2);
+    runClickEffect();
+  });
+}
+
+function updatePieceColor(index, player) {
+  if (player === 1) {
+    player1SettingsColor.src = piecesColors[index];
+    localStorage.setItem("player1Color", piecesColors[index]);
+    localStorage.setItem("player1ColorIndex", index);
+  } else if (player === 2) {
+    player2SettingsColor.src = piecesColors[index];
+    localStorage.setItem("player2Color", piecesColors[index]);
+    localStorage.setItem("player2ColorIndex", index);
+  }
+  // console.log(localStorage);
+}
+
+function runClickEffect() {
+  clickEffect.currentTime = 0.2;
+  clickEffect.play();
+}
+
+function runWinnerEffect() {
+  winnerEffect.currentTime = 0;
+  winnerEffect.play();
+}
+
+function runTieEffect() {
+  tieEffect.currentTime = 0;
+  tieEffect.play();
+}
+
+const piecesColors = [
+  "./assets/icons/BTN_RED_CIRCLE_IN.webp",
+  "./assets/icons/BTN_LORANGE_CIRCLE_IN.webp",
+  "./assets/icons/BTN_GREEN_CIRCLE_IN.webp",
+  "./assets/icons/BTN_BLUE_CIRCLE_IN.webp",
+  "./assets/icons/BTN_GRAY_CIRCLE_IN.webp",
+];

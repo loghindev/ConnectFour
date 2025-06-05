@@ -1,15 +1,29 @@
+@font-face {
+  font-family: cheese;
+  src: url(./assets/fonts/FreeCheese-Regular.ttf);
+}
+:root {
+  --gameboard-border: hsl(41, 87%, 15%);
+}
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: cheese, sans-serif;
+  user-select: none;
 }
-
 body {
+  overflow: hidden;
+  background-image: url(./assets/icons/background.webp);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  cursor: url(./assets/icons/CRS_ARROW.png), auto;
 }
 
 /* ----- #Menu ----- */
@@ -19,35 +33,217 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px;
+  row-gap: 10px;
 }
-
 #game #playersWrapper {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  padding: 0 16px;
+}
+#game .header {
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+}
+#game #player1,
+#game #player2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#game .winner-icon {
+  width: 40px;
+}
+#game .piece {
+  width: 25px;
+  height: 25px;
+}
+#game #restart img {
+  width: 45px;
 }
 
 /* ----- #Gameboard ----- */
-
 #gameboard {
   display: grid;
-  grid-template-rows: repeat(6, 70px);
-  grid-template-columns: repeat(7, 70px);
-  border: 10px solid orange;
-  border-radius: 6px;
-  padding: 8px;
+  grid-template-rows: repeat(6, 75px);
+  grid-template-columns: repeat(7, 75px);
+  border: 1px solid rgb(53, 49, 40);
+  border-radius: 25px;
+  box-shadow: 0px 4px 40px var(--gameboard-border);
+  padding: 15px;
+  background-image: url(./assets/icons/wood.jpg);
+  background-repeat: repeat-x;
+  background-size: contain;
 }
 #gameboard > .cell {
   border: 1px solid;
-  margin: 5px;
-  border: 3px solid;
+  margin: 8px;
+  box-shadow: 2px 2px 6px rgb(39, 37, 30);
   border-radius: 50%;
-  cursor: pointer;
   background-size: cover;
   background-position: center;
 }
-#gameboard > .cell:hover {
-  background-color: hsl(0, 0%, 92%);
+
+/* ----- Settings ----- */
+#settings {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 340px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  background-color: rgba(139, 111, 100, 0.35); /* to burn */
+  color: white;
+  text-shadow: 1px 1px 5px rgb(59, 59, 59);
+  box-shadow: -2px 0 20px rgb(41, 41, 41);
+  background-image: url(./assets/icons/wood.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-blend-mode: color-burn;
+  /* transform: translateX(calc(100% - 70px)); */
+  transition: transform 0.28s ease;
+}
+#settings:hover {
+  transform: translateX(0);
+}
+
+#settings .header {
+  font-size: 1.7em;
+  position: absolute;
+  left: 50%;
+  top: 1em;
+  transform: translateX(-50%);
+}
+
+/* ----- Settings Content ----- */
+#settings .content {
+  height: 90%;
+  position: absolute;
+  right: 0;
+  top: 10%;
+  padding-right: 20px;
+}
+
+#settings .content > .music,
+#settings .content > .effects {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 14px;
+  margin: 15px 0;
+  font-size: 1.2em;
+}
+#settings .content .music .music-muted {
+  width: 32px;
+  height: 30.55px;
+}
+#settings .content .effects .effects-muted {
+  position: relative;
+  top: 3px;
+  right: 4px;
+  margin-bottom: 3px;
+}
+#settings .content .player1-color {
+  margin-top: 70px;
+}
+
+#settings .content .player2-color {
+  margin-top: 30px;
+}
+
+#settings .content .player1-color .left-arr,
+#settings .content .player1-color .right-arr,
+#settings .content .player2-color .left-arr,
+#settings .content .player2-color .right-arr {
+  width: 1.4em;
+}
+
+#settings .change-settings-warning {
+  text-align: right;
+  font-size: 1em;
+  letter-spacing: 1px;
+  position: absolute;
+  right: 0;
+  bottom: 1em;
+  padding: 5px;
+}
+
+/* ----- Settings adjustments ----- */
+#settings .player1-color,
+#settings .player2-color {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 0.9em;
+  font-size: 1.3em;
+}
+#settings .player1-color .options,
+#settings .player2-color .options {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  column-gap: 15px;
+}
+#settings .player1-color img.color,
+#settings .player2-color img.color {
+  width: 38px;
+}
+
+/* ----- Images Resize ------ */
+#settings > .settings-icon {
+  width: 50px;
+  margin: 10px;
+}
+#settings .content img {
+  width: 32px;
+}
+#settings .content .effects-muted {
+  width: 28px;
+}
+
+/* ----- Cursor handle ----- */
+#restart:hover,
+#gameboard:hover,
+#settings .content .music:hover,
+#settings .content .effects:hover,
+#settings .content .player1-color .left-arr:hover,
+#settings .content .player1-color .right-arr:hover,
+#settings .content .player2-color .left-arr:hover,
+#settings .content .player2-color .right-arr:hover {
+  cursor: url(./assets/icons/CRS_HAND.png), auto;
+}
+
+/* ----- Utility classes */
+.fade-in {
+  animation: fade-in 0.15s ease;
+}
+.hidden {
+  visibility: hidden;
+}
+.hidden-setting {
+  display: none;
+}
+
+/* ----- Keyframes ----- */
+@keyframes fade-in {
+  from {
+    transform: scale(0.2);
+  }
+}
+
+/* ----- mobile ----- */
+@media screen and (max-width: 600px) {
+  body {
+    background-size: 450%;
+  }
+  #gameboard {
+    grid-template-rows: repeat(6, 50px);
+    grid-template-columns: repeat(7, 50px);
+  }
 }
