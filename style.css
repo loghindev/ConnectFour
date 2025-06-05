@@ -26,6 +26,9 @@ body {
   cursor: url(./assets/icons/CRS_ARROW.png), auto;
 }
 
+header h1 {
+  color: rgba(71, 66, 49, 0.89);
+}
 /* ----- #Menu ----- */
 
 /* ----- #Game ----- */
@@ -105,7 +108,7 @@ body {
   background-position: center;
   background-size: cover;
   background-blend-mode: color-burn;
-  /* transform: translateX(calc(100% - 70px)); */
+  transform: translateX(calc(100% - 70px));
   transition: transform 0.28s ease;
 }
 #settings:hover {
@@ -150,11 +153,24 @@ body {
   margin-bottom: 3px;
 }
 #settings .content .player1-color {
-  margin-top: 70px;
+  margin-top: 50px;
 }
 
 #settings .content .player2-color {
-  margin-top: 30px;
+  margin-top: 15px;
+  margin-bottom: 120px;
+}
+#settings .content #reset-scoreboard,
+#settings .content #reset-current-game {
+  margin-top: 15px;
+  transition: all 0.15s ease;
+}
+
+#settings .content #reset-scoreboard:hover,
+#settings .content #reset-current-game:hover {
+  color: hsl(0, 61%, 41%);
+  text-shadow: 1px 1px 5px hsl(0, 28%, 73%);
+  transform: scale(1.03);
 }
 
 #settings .content .player1-color .left-arr,
@@ -215,7 +231,9 @@ body {
 #settings .content .player1-color .left-arr:hover,
 #settings .content .player1-color .right-arr:hover,
 #settings .content .player2-color .left-arr:hover,
-#settings .content .player2-color .right-arr:hover {
+#settings .content .player2-color .right-arr:hover,
+#settings .content #reset-scoreboard:hover,
+#settings .content #reset-current-game:hover {
   cursor: url(./assets/icons/CRS_HAND.png), auto;
 }
 
@@ -229,11 +247,36 @@ body {
 .hidden-setting {
   display: none;
 }
+.zoom-in {
+  animation: zoom-in 2s ease;
+}
+.blink {
+  animation: blink 1.8s ease infinite;
+}
+.winner-cell-blink {
+  animation: winner-cell-blink 1.8s ease-in-out infinite;
+}
 
 /* ----- Keyframes ----- */
 @keyframes fade-in {
   from {
     transform: scale(0.2);
+  }
+}
+@keyframes zoom-in {
+  from {
+    transform: scale(0.2) rotate(360deg);
+  }
+}
+@keyframes blink {
+  50% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+@keyframes winner-cell-blink {
+  50% {
+    opacity: 40%;
   }
 }
 

@@ -7,14 +7,14 @@ const player2Trophy = document.querySelector("#game #player2 .winner-icon");
 const player2Piece = document.querySelector("#game #playersWrapper #player2 .piece");
 const resetBtn = document.querySelector("#restart img");
 const settings = document.getElementById("settings");
+const resetScoreBtn = document.getElementById("reset-scoreboard");
+const resetRound = document.getElementById("reset-current-game");
 const player1SettingsColor = document.querySelector("#settings .content .player1-color .pieces-colors .color");
 const player2SettingsColor = document.querySelector("#settings .content .player2-color .pieces-colors .color");
 const musicUnmutedIcon = document.querySelector("#settings .music .music-unmuted");
 const musicMutedIcon = document.querySelector("#settings .music .music-muted");
 const effectsUnmutedIcon = document.querySelector("#settings .effects .effects-unmuted");
 const effectsMutedIcon = document.querySelector("#settings .effects .effects-muted");
-const musicVolume = 0.5;
-const effectsVolume = 0.8;
 const rows = 6;
 const cols = 7;
 const players = ["Red", "Yellow"];
@@ -31,6 +31,7 @@ let gameOver = false;
 document.addEventListener("DOMContentLoaded", () => {
   generateGameboard();
   highlighCurrentPlayer();
+  // loadAudioSettings();
   loadPlayersPieces();
   handlePiecesChanger();
 });
@@ -79,12 +80,13 @@ function setCell(event) {
     }
     --r;
   }
-  runClickEffect();
+
   checkWinner(currPlayer);
   if (!gameOver) {
     currPlayer = currPlayer === players[0] ? players[1] : players[0];
     highlighCurrentPlayer();
   }
+  runClickEffect();
 }
 
 function checkWinner(player) {
@@ -97,7 +99,13 @@ function checkWinner(player) {
           matrix[r][c + 1] === matrix[r][c + 2] &&
           matrix[r][c + 2] === matrix[r][c + 3]
         ) {
-          displayWinner(player);
+          displayWinner(
+            player,
+            r.toString() + "-" + c.toString(),
+            r.toString() + "-" + (c + 1).toString(),
+            r.toString() + "-" + (c + 2).toString(),
+            r.toString() + "-" + (c + 3).toString()
+          );
           return;
         }
       }
@@ -112,7 +120,13 @@ function checkWinner(player) {
           matrix[r + 1][c] === matrix[r + 2][c] &&
           matrix[r + 2][c] === matrix[r + 3][c]
         ) {
-          displayWinner(player);
+          displayWinner(
+            player,
+            r.toString() + "-" + c.toString(),
+            (r + 1).toString() + "-" + c.toString(),
+            (r + 2).toString() + "-" + c.toString(),
+            (r + 3).toString() + "-" + c.toString()
+          );
           return;
         }
       }
@@ -127,7 +141,13 @@ function checkWinner(player) {
           matrix[r + 1][c + 1] === matrix[r + 2][c + 2] &&
           matrix[r + 2][c + 2] === matrix[r + 3][c + 3]
         ) {
-          displayWinner(player);
+          displayWinner(
+            player,
+            r.toString() + "-" + c.toString(),
+            (r + 1).toString() + "-" + (c + 1).toString(),
+            (r + 2).toString() + "-" + (c + 2).toString(),
+            (r + 3).toString() + "-" + (c + 3).toString()
+          );
           return;
         }
       }
@@ -142,7 +162,13 @@ function checkWinner(player) {
           matrix[r + 1][c - 1] === matrix[r + 2][c - 2] &&
           matrix[r + 2][c - 2] === matrix[r + 3][c - 3]
         ) {
-          displayWinner(player);
+          displayWinner(
+            player,
+            r.toString() + "-" + c.toString(),
+            (r + 1).toString() + "-" + (c - 1).toString(),
+            (r + 2).toString() + "-" + (c - 2).toString(),
+            (r + 3).toString() + "-" + (c - 3).toString()
+          );
           return;
         }
       }
@@ -155,21 +181,27 @@ function checkWinner(player) {
   }
 }
 
-function displayWinner(winner) {
+function displayWinner(winner, ...cellsId) {
+  console.log("Winner pieces: ", cellsId);
+  cellsId.forEach((id) => document.getElementById(id).classList.add("winner-cell-blink"));
+
   gameOver = true;
   if (winner === "Red") {
     runWinnerEffect();
-    player1Trophy.classList.remove("hidden"); // .replace - gsap
+    player1Trophy.classList.replace("hidden", "zoom-in");
   } else if (winner === "Yellow") {
     runWinnerEffect();
-    player2Trophy.classList.remove("hidden"); // .replace - gsap
+    player2Trophy.classList.replace("hidden", "zoom-in");
   } else if (winner === "Tie") {
     runTieEffect();
     document.getElementById("versus-icon").textContent = "TIE";
+    document.getElementById("versus-icon").classList = "blink";
   }
   highlighCurrentPlayer(); // gameOver is true
-  resetBtn.classList.remove("hidden"); // .replace - gsap
-  resetBtn.addEventListener("click", resetGame);
+  resetBtn.classList.replace("hidden", "fade-in");
+  resetBtn.addEventListener("click", () => {
+    resetGame(cellsId);
+  });
 }
 
 function highlighCurrentPlayer() {
@@ -196,14 +228,41 @@ function loadPlayersPieces() {
   player2SettingsColor.src = piecesColors[player2ColorIndex];
 }
 
-function resetGame() {
-  window.location.reload();
+function resetGame(cellsId) {
+  gameOver = false;
+  // !!! TO FIX
+  if (cellsId !== null) {
+    cellsId.forEach((id) => document.getElementById(id).classList.remove("winner-cell-blink"));
+  } else {
+    console.log("New Round - called from Settings");
+  }
+  clearGameboard();
+  highlighCurrentPlayer();
+  loadPlayersPieces();
+  resetBtn.classList.replace("fade-in", "hidden");
+  player1Trophy.classList.replace("zoom-in", "hidden");
+  player2Trophy.classList.replace("zoom-in", "hidden");
+  runClickEffect();
+}
+
+function clearGameboard() {
+  const cells = Array.from(gameboard.querySelectorAll(".cell")).filter((cell) => cell.classList.contains("fade-in"));
+  cells.forEach((cell) => {
+    cell.style.backgroundImage = "unset";
+    cell.classList.remove("fade-in");
+  });
+  // clear matrix
+  matrix.forEach((array) => {
+    for (let i = 0; i < array.length; ++i) {
+      array[i] = " ";
+    }
+  });
 }
 
 // ---------- Aside Settings ------------
 const musicText = document.querySelector("#settings .music span");
 const music = document.getElementById("bgAudio");
-music.volume = musicVolume;
+music.volume = 0.4;
 
 const clickEffect = new Audio("./assets/effects/click-effect.mp3");
 const winnerEffect = new Audio("./assets/effects/winner-effect.mp3");
@@ -228,13 +287,17 @@ musicMutedIcon.addEventListener("click", () => {
 effectsUnmutedIcon.addEventListener("click", () => {
   effectsUnmutedIcon.classList.add("hidden-setting");
   effectsMutedIcon.classList.remove("hidden-setting");
-  runClickEffect();
+  // runClickEffect();
 });
 
 effectsMutedIcon.addEventListener("click", () => {
   effectsMutedIcon.classList.add("hidden-setting");
   effectsUnmutedIcon.classList.remove("hidden-setting");
   runClickEffect();
+});
+
+resetRound.addEventListener("click", () => {
+  resetGame(null);
 });
 
 function handlePiecesChanger() {
@@ -248,23 +311,27 @@ function handlePiecesChanger() {
   player1ArrLeft.addEventListener("click", () => {
     player1ColorIndex > 0 ? --player1ColorIndex : (player1ColorIndex = colorsLength - 1);
     updatePieceColor(player1ColorIndex, 1);
+
     runClickEffect();
   });
   player1ArrRight.addEventListener("click", () => {
     player1ColorIndex < colorsLength - 1 ? ++player1ColorIndex : (player1ColorIndex = 0);
     updatePieceColor(player1ColorIndex, 1);
+
     runClickEffect();
   });
 
   player2ArrLeft.addEventListener("click", () => {
     player2ColorIndex > 0 ? --player2ColorIndex : (player2ColorIndex = colorsLength - 1);
     updatePieceColor(player2ColorIndex, 2);
+
     runClickEffect();
   });
 
   player2ArrRight.addEventListener("click", () => {
     player2ColorIndex < colorsLength - 1 ? ++player2ColorIndex : (player2ColorIndex = 0);
     updatePieceColor(player2ColorIndex, 2);
+
     runClickEffect();
   });
 }
@@ -272,27 +339,31 @@ function handlePiecesChanger() {
 function updatePieceColor(index, player) {
   if (player === 1) {
     player1SettingsColor.src = piecesColors[index];
+    player1Piece.src = piecesColors[index];
     localStorage.setItem("player1Color", piecesColors[index]);
     localStorage.setItem("player1ColorIndex", index);
   } else if (player === 2) {
     player2SettingsColor.src = piecesColors[index];
+    player2Piece.src = piecesColors[index];
     localStorage.setItem("player2Color", piecesColors[index]);
     localStorage.setItem("player2ColorIndex", index);
   }
-  // console.log(localStorage);
 }
 
 function runClickEffect() {
+  if (effectsUnmutedIcon.classList.contains("hidden-setting")) return;
   clickEffect.currentTime = 0.2;
   clickEffect.play();
 }
 
 function runWinnerEffect() {
+  if (musicUnmutedIcon.classList.contains("hidden-setting")) return;
   winnerEffect.currentTime = 0;
   winnerEffect.play();
 }
 
 function runTieEffect() {
+  if (musicUnmutedIcon.classList.contains("hidden-setting")) return;
   tieEffect.currentTime = 0;
   tieEffect.play();
 }
