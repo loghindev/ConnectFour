@@ -14,7 +14,13 @@
     <!-- Music - autoplay on -->
     <audio src="./assets/effects/music.mp3" id="bgAudio" preload="auto" type="audio/mp3" autoplay loop></audio>
     <!-- Menu -->
-    <div id="menu" class="hidden">START</div>
+    <div id="menu">
+      <div class="container">
+        <ul id="menuButtons">
+          <li><button id="startGameBtn">Start Game</button></li>
+        </ul>
+      </div>
+    </div>
 
     <!-- In-game -->
     <div id="game">
@@ -39,7 +45,11 @@
         </div>
       </div>
       <div id="gameboard"></div>
-      <div id="scoreboard">0 : 0</div>
+      <div id="scoreboard">
+        <div class="player1-score">0</div>
+        <span>:</span>
+        <div class="player2-score">0</div>
+      </div>
     </div>
 
     <!-- Aside settings -->
@@ -78,9 +88,51 @@
             <img src="./assets/icons/BTN_HORIZ_SINGLE_DOWN.webp" class="right-arr" alt="right_arrow" />
           </div>
         </div>
-        <div id="reset-scoreboard">Reset Scoreboard</div>
         <div id="reset-current-game">Start new round</div>
-        <div class="change-settings-warning">Color changes requires new round to take effect</div>
+        <div id="reset-scoreboard">Reset Scoreboard</div>
+        <div class="change-settings-warning">Requires new round to take effect</div>
+      </div>
+    </div>
+
+    <!-- Aside How to play -->
+    <div id="howToPlay">
+      <div class="container">
+        <img src="./assets/icons/SYMB_INFO.webp" class="info-icon" alt="how_to_play_icon" />
+        <div class="header">How to play</div>
+        <div class="content">
+          <div class="info-box">
+            <div class="description">
+              <p>Rules:</p>
+              <hr />
+              Connect Four is a game in which the players choose a color and then take turns dropping colored tokens
+              into a grid (6 rows x 7 columns).<br /><br />
+              The pieces fall straight down, occupying the lowest available space within the column. <br /><br />
+              <p>Objective:</p>
+              <hr />
+              The objective of the game is to be the first to form a horizontal, vertical, or diagonal line of four of
+              your tokens. <br />
+              <br />
+              <div class="examples">
+                <img src="./assets/examples/vertically_example.webp" alt="vertically_win_example" />
+                <img src="./assets/examples/horizontally_example.webp" alt="horizontally_win_example" />
+                <img src="./assets/examples/diag1_example.webp" alt="diag_win_example_1" />
+                <img src="./assets/examples/diag2_example.webp" alt="diag_win_example_2" />
+              </div>
+              <p>Feature:</p>
+              <hr />
+              • If you are in the middle of a round and you want to end it for some reason, reset it by clicking
+              <mark>Start new round</mark> in <mark>Settings</mark>.<br />
+              • <mark>Reset Scoreboard</mark> will reset game score.
+              <p>History:</p>
+              <hr />
+              • The game was created by
+              <u><a href="https://www.google.com/search?q=howard+wexler" target="_blank">Howard Wexler</a></u> and first
+              sold under the <em><u>Connect Four</u></em> trademark by <u>Milton Bradley</u> in February 1974.<br /><br />
+              • The game was first solved by James Dow Allen (October 1, 1988).
+            </div>
+          </div>
+          <div class="made-by-me">&copy; loghindev</div>
+        </div>
       </div>
     </div>
   </body>

@@ -2,19 +2,22 @@ const gameboard = document.getElementById("gameboard");
 const player1Name = document.querySelector("#game #player1 .name");
 const player1Trophy = document.querySelector("#game #player1 .winner-icon");
 const player1Piece = document.querySelector("#game #playersWrapper #player1 .piece");
+const player1Score = document.querySelector("#game #scoreboard .player1-score");
 const player2Name = document.querySelector("#game #player2 .name");
 const player2Trophy = document.querySelector("#game #player2 .winner-icon");
 const player2Piece = document.querySelector("#game #playersWrapper #player2 .piece");
+const player2Score = document.querySelector("#game #scoreboard .player2-score");
 const resetBtn = document.querySelector("#restart img");
 const settings = document.getElementById("settings");
 const resetScoreBtn = document.getElementById("reset-scoreboard");
-const resetRound = document.getElementById("reset-current-game");
+const resetRoundBtn = document.getElementById("reset-current-game");
 const player1SettingsColor = document.querySelector("#settings .content .player1-color .pieces-colors .color");
 const player2SettingsColor = document.querySelector("#settings .content .player2-color .pieces-colors .color");
 const musicUnmutedIcon = document.querySelector("#settings .music .music-unmuted");
 const musicMutedIcon = document.querySelector("#settings .music .music-muted");
 const effectsUnmutedIcon = document.querySelector("#settings .effects .effects-unmuted");
 const effectsMutedIcon = document.querySelector("#settings .effects .effects-muted");
+const menuStartGameBtn = document.getElementById("startGameBtn");
 const rows = 6;
 const cols = 7;
 const players = ["Red", "Yellow"];
@@ -26,12 +29,10 @@ let player2ColorIndex =
   localStorage.getItem("player2ColorIndex") !== null ? localStorage.getItem("player2ColorIndex") : 1;
 let matrix = [];
 let gameOver = false;
-// console.log(localStorage);
 
 document.addEventListener("DOMContentLoaded", () => {
   generateGameboard();
   highlighCurrentPlayer();
-  // loadAudioSettings();
   loadPlayersPieces();
   handlePiecesChanger();
 });
@@ -182,9 +183,7 @@ function checkWinner(player) {
 }
 
 function displayWinner(winner, ...cellsId) {
-  console.log("Winner pieces: ", cellsId);
   cellsId.forEach((id) => document.getElementById(id).classList.add("winner-cell-blink"));
-
   gameOver = true;
   if (winner === "Red") {
     runWinnerEffect();
@@ -197,11 +196,22 @@ function displayWinner(winner, ...cellsId) {
     document.getElementById("versus-icon").textContent = "TIE";
     document.getElementById("versus-icon").classList = "blink";
   }
+  updateScoreboard(winner);
   highlighCurrentPlayer(); // gameOver is true
   resetBtn.classList.replace("hidden", "fade-in");
   resetBtn.addEventListener("click", () => {
     resetGame(cellsId);
   });
+}
+
+function updateScoreboard(winner) {
+  if (winner === "Red") {
+    let score = Number(player1Score.textContent);
+    player1Score.textContent = (++score).toString();
+  } else if (winner === "Yellow") {
+    let score = Number(player2Score.textContent);
+    player2Score.textContent = (++score).toString();
+  }
 }
 
 function highlighCurrentPlayer() {
@@ -230,11 +240,8 @@ function loadPlayersPieces() {
 
 function resetGame(cellsId) {
   gameOver = false;
-  // !!! TO FIX
-  if (cellsId !== null) {
+  if (cellsId.length !== 0) {
     cellsId.forEach((id) => document.getElementById(id).classList.remove("winner-cell-blink"));
-  } else {
-    console.log("New Round - called from Settings");
   }
   clearGameboard();
   highlighCurrentPlayer();
@@ -259,16 +266,20 @@ function clearGameboard() {
   });
 }
 
-// ---------- Aside Settings ------------
+function resetScoreboard() {
+  console.log("Reset Scoreboard");
+  player1Score.textContent = "0";
+  player2Score.textContent = "0";
+}
+
+// ----------------------
 const musicText = document.querySelector("#settings .music span");
 const music = document.getElementById("bgAudio");
-music.volume = 0.4;
+music.volume = 0.3;
 
 const clickEffect = new Audio("./assets/effects/click-effect.mp3");
 const winnerEffect = new Audio("./assets/effects/winner-effect.mp3");
 const tieEffect = new Audio("./assets/effects/tie-effect.mp3");
-winnerEffect.volume = 0.6;
-tieEffect.volume = 0.6;
 
 musicUnmutedIcon.addEventListener("click", () => {
   musicUnmutedIcon.classList.add("hidden-setting");
@@ -287,7 +298,7 @@ musicMutedIcon.addEventListener("click", () => {
 effectsUnmutedIcon.addEventListener("click", () => {
   effectsUnmutedIcon.classList.add("hidden-setting");
   effectsMutedIcon.classList.remove("hidden-setting");
-  // runClickEffect();
+  runClickEffect();
 });
 
 effectsMutedIcon.addEventListener("click", () => {
@@ -296,8 +307,14 @@ effectsMutedIcon.addEventListener("click", () => {
   runClickEffect();
 });
 
-resetRound.addEventListener("click", () => {
-  resetGame(null);
+resetScoreBtn.addEventListener("click", () => {
+  resetScoreboard();
+  runClickEffect();
+});
+
+resetRoundBtn.addEventListener("click", () => {
+  const cellsId = Array.from(document.querySelectorAll("#gameboard .cell.winner-cell-blink")).map((cell) => cell.id);
+  resetGame(cellsId);
 });
 
 function handlePiecesChanger() {
@@ -311,27 +328,23 @@ function handlePiecesChanger() {
   player1ArrLeft.addEventListener("click", () => {
     player1ColorIndex > 0 ? --player1ColorIndex : (player1ColorIndex = colorsLength - 1);
     updatePieceColor(player1ColorIndex, 1);
-
     runClickEffect();
   });
   player1ArrRight.addEventListener("click", () => {
     player1ColorIndex < colorsLength - 1 ? ++player1ColorIndex : (player1ColorIndex = 0);
     updatePieceColor(player1ColorIndex, 1);
-
     runClickEffect();
   });
 
   player2ArrLeft.addEventListener("click", () => {
     player2ColorIndex > 0 ? --player2ColorIndex : (player2ColorIndex = colorsLength - 1);
     updatePieceColor(player2ColorIndex, 2);
-
     runClickEffect();
   });
 
   player2ArrRight.addEventListener("click", () => {
     player2ColorIndex < colorsLength - 1 ? ++player2ColorIndex : (player2ColorIndex = 0);
     updatePieceColor(player2ColorIndex, 2);
-
     runClickEffect();
   });
 }
@@ -348,6 +361,21 @@ function updatePieceColor(index, player) {
     localStorage.setItem("player2Color", piecesColors[index]);
     localStorage.setItem("player2ColorIndex", index);
   }
+}
+
+// ----- MENU -----
+menuStartGameBtn.addEventListener("click", startGame);
+
+function startGame() {
+  const menuContainer = document.getElementById("menu");
+  const gameContainer = document.getElementById("game");
+  runClickEffect();
+  music.play();
+  // Switch from menu to in-game
+  setTimeout(() => {
+    menuContainer.style.display = "none";
+    gameContainer.style.display = "flex";
+  }, 800);
 }
 
 function runClickEffect() {

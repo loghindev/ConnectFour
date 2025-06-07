@@ -2,9 +2,6 @@
   font-family: cheese;
   src: url(./assets/fonts/FreeCheese-Regular.ttf);
 }
-:root {
-  --gameboard-border: hsl(41, 87%, 15%);
-}
 * {
   margin: 0;
   padding: 0;
@@ -13,12 +10,12 @@
   user-select: none;
 }
 body {
+  height: 100vh;
   overflow: hidden;
   background-image: url(./assets/icons/background.webp);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -27,16 +24,39 @@ body {
 }
 
 header h1 {
-  color: rgba(71, 66, 49, 0.89);
+  color: var(--menu-font-color);
 }
 /* ----- #Menu ----- */
+#menu {
+  margin-top: 5em;
+}
+#menuButtons {
+  list-style: none;
+}
+
+#menuButtons button {
+  font-size: 1.5em;
+  padding: 6px 12px;
+  background-color: transparent;
+  border: none;
+  border-radius: 30px;
+  margin: 0.25em 0;
+  width: 200px;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+#menuButtons button:hover {
+  background-color: hsl(29, 61%, 24%);
+  color: hsl(0, 0%, 90%);
+}
 
 /* ----- #Game ----- */
 #game {
   display: flex;
   flex-direction: column;
   align-items: center;
-  row-gap: 10px;
+  row-gap: 8px;
+  display: none;
 }
 #game #playersWrapper {
   width: 100%;
@@ -49,6 +69,13 @@ header h1 {
   display: flex;
   align-items: center;
   column-gap: 8px;
+}
+#game #scoreboard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 8px;
+  font-size: 1.2em;
 }
 #game #player1,
 #game #player2 {
@@ -74,7 +101,7 @@ header h1 {
   grid-template-columns: repeat(7, 75px);
   border: 1px solid rgb(53, 49, 40);
   border-radius: 25px;
-  box-shadow: 0px 4px 40px var(--gameboard-border);
+  box-shadow: 0px 4px 40px rgb(83, 61, 18);
   padding: 15px;
   background-image: url(./assets/icons/wood.jpg);
   background-repeat: repeat-x;
@@ -96,9 +123,6 @@ header h1 {
   right: 0;
   height: 100vh;
   width: 340px;
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: space-between;
   background-color: rgba(139, 111, 100, 0.35); /* to burn */
   color: white;
   text-shadow: 1px 1px 5px rgb(59, 59, 59);
@@ -114,8 +138,8 @@ header h1 {
 #settings:hover {
   transform: translateX(0);
 }
-
-#settings .header {
+#settings .header,
+#howToPlay .header {
   font-size: 1.7em;
   position: absolute;
   left: 50%;
@@ -138,31 +162,23 @@ header h1 {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  column-gap: 14px;
   margin: 15px 0;
   font-size: 1.2em;
 }
-#settings .content .music .music-muted {
-  width: 32px;
-  height: 30.55px;
-}
-#settings .content .effects .effects-muted {
-  position: relative;
-  top: 3px;
-  right: 4px;
-  margin-bottom: 3px;
-}
+
+/* ----- Settings adjustments ----- */
 #settings .content .player1-color {
-  margin-top: 50px;
+  margin-top: 80px;
 }
 
 #settings .content .player2-color {
   margin-top: 15px;
-  margin-bottom: 120px;
+  margin-bottom: 70px;
 }
-#settings .content #reset-scoreboard,
-#settings .content #reset-current-game {
-  margin-top: 15px;
+
+#settings .content #reset-current-game,
+#settings .content #reset-scoreboard {
+  margin-bottom: 25px;
   transition: all 0.15s ease;
 }
 
@@ -173,24 +189,15 @@ header h1 {
   transform: scale(1.03);
 }
 
-#settings .content .player1-color .left-arr,
-#settings .content .player1-color .right-arr,
-#settings .content .player2-color .left-arr,
-#settings .content .player2-color .right-arr {
-  width: 1.4em;
-}
-
 #settings .change-settings-warning {
   text-align: right;
   font-size: 1em;
-  letter-spacing: 1px;
   position: absolute;
   right: 0;
   bottom: 1em;
   padding: 5px;
 }
 
-/* ----- Settings adjustments ----- */
 #settings .player1-color,
 #settings .player2-color {
   display: flex;
@@ -203,24 +210,147 @@ header h1 {
 #settings .player2-color .options {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  column-gap: 15px;
+  column-gap: 25px;
+}
+
+/* ----- Resizing Images ------ */
+#settings .content .music .music-muted {
+  /* resize image */
+  width: 32px;
+  height: 30.55px;
+}
+#settings .content .effects .effects-muted {
+  /* positioning image */
+  position: relative;
+  top: 3px;
+  right: 4px;
+  margin-bottom: 3px;
 }
 #settings .player1-color img.color,
 #settings .player2-color img.color {
   width: 38px;
 }
+#settings .content .player1-color .left-arr,
+#settings .content .player1-color .right-arr,
+#settings .content .player2-color .left-arr,
+#settings .content .player2-color .right-arr {
+  width: 1.3em;
+}
 
-/* ----- Images Resize ------ */
 #settings > .settings-icon {
   width: 50px;
-  margin: 10px;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
 }
 #settings .content img {
   width: 32px;
 }
 #settings .content .effects-muted {
   width: 28px;
+}
+
+/* ----- #howToPlay aside board ------ */
+#howToPlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 440px;
+  height: 100vh;
+  background-color: rgba(139, 111, 100, 0.35); /* to burn */
+  color: white;
+  text-shadow: 1px 1px 5px rgb(59, 59, 59);
+  box-shadow: 2px 0 20px rgb(41, 41, 41);
+  background-image: url(./assets/icons/wood.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-blend-mode: color-burn;
+  transform: translateX(calc(-100% + 70px));
+  transition: all 0.28s ease;
+}
+#howToPlay:hover {
+  transform: translateX(0);
+}
+#howToPlay:hover .info-box {
+  box-shadow: 1px 1px 10px black;
+}
+#howToPlay .content {
+  height: 90%;
+  width: calc(100% - 70px);
+  position: absolute;
+  left: 0;
+  top: 10%;
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  transition: all 0.1s ease;
+}
+#howToPlay:hover .content {
+  width: 95%;
+}
+#howToPlay .info-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 25px;
+  width: 22px;
+}
+
+#howToPlay .info-box {
+  overflow-y: auto;
+  width: 100%;
+  height: 85%;
+  line-height: 1.5;
+  border-radius: 6px;
+  padding: 10px;
+  color: rgb(216, 216, 216);
+
+  background-color: rgba(3, 3, 3, 0.651);
+}
+
+#howToPlay .info-box .description p {
+  padding: 1em 0 0.1em 0;
+  font-size: 1.1em;
+  color: hsl(41, 83%, 57%);
+}
+#howToPlay .info-box .description a {
+  color: hsl(41, 83%, 57%);
+}
+#howToPlay .info-box .description a:hover {
+  color: hsl(41, 83%, 47%);
+}
+#howToPlay .info-box .description hr {
+  border: 1px solid hsl(39, 60%, 69%);
+  margin-bottom: 0.6em;
+}
+#howToPlay .info-box .description mark {
+  background-color: hsl(39, 89%, 40%);
+  text-shadow: 1px 1px 3px black;
+  color: hsl(0, 1%, 85%);
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+#howToPlay .info-box .description .examples img {
+  width: 49%;
+  border-radius: 10px;
+}
+#howToPlay .info-box .description .examples:hover img:not(:hover) {
+  opacity: 80%;
+  transition: opacity 0.1s ease;
+}
+#howToPlay .info-box::-webkit-scrollbar {
+  width: 11px;
+}
+
+#howToPlay .info-box::-webkit-scrollbar-thumb {
+  background: hsl(41, 59%, 50%, 0.7);
+  border-radius: 3px;
+}
+#howToPlay .info-box::-webkit-scrollbar-thumb:hover {
+  background: hsla(41, 59%, 50%, 1);
 }
 
 /* ----- Cursor handle ----- */
@@ -233,7 +363,10 @@ header h1 {
 #settings .content .player2-color .left-arr:hover,
 #settings .content .player2-color .right-arr:hover,
 #settings .content #reset-scoreboard:hover,
-#settings .content #reset-current-game:hover {
+#settings .content #reset-current-game:hover,
+#menuButtons button:hover,
+#howToPlay .info-box::-webkit-scrollbar-thumb:hover,
+#howToPlay .info-box .description a:hover {
   cursor: url(./assets/icons/CRS_HAND.png), auto;
 }
 
@@ -254,7 +387,7 @@ header h1 {
   animation: blink 1.8s ease infinite;
 }
 .winner-cell-blink {
-  animation: winner-cell-blink 1.8s ease-in-out infinite;
+  animation: winner-cell-blink 1.3s ease-in-out infinite;
 }
 
 /* ----- Keyframes ----- */
@@ -276,7 +409,7 @@ header h1 {
 }
 @keyframes winner-cell-blink {
   50% {
-    opacity: 40%;
+    opacity: 10%;
   }
 }
 
